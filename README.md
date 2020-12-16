@@ -7,4 +7,4 @@
 ## Referensi
 1. [Openzeppelin page AccessControl]('https://docs.openzeppelin.com/contracts/3.x/access-control)
 2. [Openzeppelin github AccessControl]('https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol')
-3. [Git flow Tutorial]('https://stackabuse.com/git-adding-a-commit-message/')
+3. [Git flow Tutorial]('https://www.red-gate.com/simple-talk/sysadmin/devops/getting-started-with-gitflow/')
