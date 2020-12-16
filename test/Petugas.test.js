@@ -3,44 +3,25 @@ const { constants,expectEvent, expectRevert } = require('@openzeppelin/test-help
 
 const Petugas = artifacts.require('Petugas');
 
-contract('Petugas', function([owner,other]) {
-    const role = '0x8443cd350038578072dc156fd27150aa8473e315e8408940d1432e801c990d27'
+contract('Petugas', function([owner,petugas,other,pengguna]){
+    const role = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const rolepengguna = '0x83741c3c887d330a865d1fce1157e1846b02421c0bc7c37f35286c5a35562936'
 
-    beforeEach(async function() {
+    beforeEach(async function(){
         this.petugas = await Petugas.new({from:owner});
     });
 
-    it('menambahkan petugas', async function() {
-        const receipt = await this.petugas.AddPetugas(
-            "0x644bD3d6d69bB567a269c6dFfFCD9b5706bC6e55",
+    it('owner menambahkan admin', async function(){
+        this.petugas.AddPetugas(
+            petugas,
             {from:owner}
         );
-        expectEvent(receipt,'RoleGranted',{
-            role:role,
-            account:other,
-            sender:owner
-        });
     });
 
-    it('non admin menambahkan petugas', async function(){
+    it('non-owner menamahkan admin',async function() {
         await expectRevert(
-            this.petugas.AddPetugas(
-                "0x644bD3d6d69bB567a269c6dFfFCD9b5706bC6e55",
-                {from:other}
-            ),
-            "Hanya Admin"
-        )
-    });
-
-    it('menghapus petugas', async function(){
-        const receipt = await this.petugas.RemovePetugas(
-            "0x644bD3d6d69bB567a269c6dFfFCD9b5706bC6e55",
-            {from:owner}
+            this.petugas.AddPetugas(petugas,{from:other}),
+            "Ownable: caller is not the owner"
         );
-        // expectEvent(receipt,'RoleRevoked',{
-        //     role:role,
-        //     account:other,
-        //     sender:owner
-        // });
     });
 });
