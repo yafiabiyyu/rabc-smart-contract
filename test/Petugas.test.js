@@ -4,24 +4,35 @@ const { constants,expectEvent, expectRevert } = require('@openzeppelin/test-help
 const Petugas = artifacts.require('Petugas');
 
 contract('Petugas', function([owner,petugas,other,pengguna]){
-    const role = '0x0000000000000000000000000000000000000000000000000000000000000000';
-    const rolepengguna = '0x83741c3c887d330a865d1fce1157e1846b02421c0bc7c37f35286c5a35562936'
+    const DEFAULT_USER_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const DEFAULT_PETUGAS_ROLE = '0x83741c3c887d330a865d1fce1157e1846b02421c0bc7c37f35286c5a35562936'
 
     beforeEach(async function(){
         this.petugas = await Petugas.new({from:owner});
     });
 
-    it('owner menambahkan admin', async function(){
-        this.petugas.AddPetugas(
-            petugas,
+    it('Owner menjadikan petugas sebagai admin pengguna', async function(){
+        this.petugas.setPetugasForRole(
+            DEFAULT_USER_ROLE,
+            DEFAULT_PETUGAS_ROLE,
             {from:owner}
         );
     });
 
-    it('non-owner menamahkan admin',async function() {
+    it('Non Owner menjadikan petugas sebagai admin pengguna', async function(){
         await expectRevert(
-            this.petugas.AddPetugas(petugas,{from:other}),
+            this.petugas.setPetugasForRole(
+                DEFAULT_USER_ROLE,
+                DEFAULT_PETUGAS_ROLE,
+                {from:other}
+            ),
             "Ownable: caller is not the owner"
         );
-    });
+    })
+    // it('non-owner menamahkan admin',async function() {
+    //     await expectRevert(
+    //         this.petugas.AddPetugas(petugas,{from:other}),
+    //         "Ownable: caller is not the owner"
+    //     );
+    // });
 });

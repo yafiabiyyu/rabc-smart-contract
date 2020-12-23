@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: UNL
+//SPDX-License-Identifier: UNL
 pragma solidity >=0.6.0 <=0.7.5;
 
 // import openzeppelin-contract module
@@ -7,32 +7,34 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Petugas is AccessControl,Ownable {
 
-    bytes32 public constant DEFAULT_PENGGUNA_ROLE = keccak256(
-        "DEFAULT_PENGGUNA_ROLE"
+    bytes32 public constant DEFAULT_PETUGAS_ROLE = keccak256(
+        "DEFAULT_PETUGAS_ROLE"
     );
+
+    bytes32 public constant DEFAULT_USER_ROLE = keccak256(
+        "DEFAULT_USER_ROLE"
+    );
+
+    // event list
+    event NewPetugas(address _rootAddress, address _newPetugasAddress);
+
+    mapping(address => bool) public blackListAdmin;
 
     constructor() public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    modifier onlyAdmin() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender),"Hanya Admin");
-        _;
+    function addNewPetugas(
+        bytes32 _petugasRole,
+        address _petugasAddress
+    ) public onlyOwner {
+        grantRole(_petugasRole, _petugasAddress);
+        emit NewPetugas(msg.sender, _petugasAddress);
     }
 
-    function AddPetugas(address _addressPetugas) public onlyOwner {
-        grantRole(DEFAULT_ADMIN_ROLE,_addressPetugas);
-    }
-
-    function RemovePetugas(address _addressPetugas) public onlyOwner {
-        revokeRole(DEFAULT_ADMIN_ROLE, _addressPetugas);
-    }
-
-    function AddPengguna(address _addressPengguna) public onlyAdmin {
-        grantRole(DEFAULT_PENGGUNA_ROLE,_addressPengguna);
-    }
-
-    function RemovePengguna(address _addressPengguna) public onlyAdmin {
-        revokeRole(DEFAULT_PENGGUNA_ROLE, _addressPengguna);
+    function setPetugasForRole(
+        bytes32 _role, bytes32 _petugasRole
+    ) public onlyOwner {
+        _setRoleAdmin(_role, _petugasRole);
     }
 }
