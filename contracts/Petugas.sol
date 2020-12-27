@@ -11,30 +11,53 @@ contract Petugas is AccessControl,Ownable {
         "DEFAULT_PETUGAS_ROLE"
     );
 
-    bytes32 public constant DEFAULT_USER_ROLE = keccak256(
-        "DEFAULT_USER_ROLE"
-    );
-
     // event list
-    event NewPetugas(address _rootAddress, address _newPetugasAddress);
+    event NewPetugas(address _newPetugasAddress);
+    event RemovePetugas(address _removePetugasAdress);
+    event newMember(address _memberAddress, string _memberName);
+    event removeMembers(address _memberAddress);
 
-    mapping(address => bool) public blackListAdmin;
+    struct Member {
+        string name;
+        bool status;
+    }
+
+    mapping(address => bool) internal petugasBlacklistAddress;
+    mapping (address => Member) public addressToMember;
 
     constructor() public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function addNewPetugas(
-        bytes32 _petugasRole,
-        address _petugasAddress
-    ) public onlyOwner {
-        grantRole(_petugasRole, _petugasAddress);
-        emit NewPetugas(msg.sender, _petugasAddress);
+    modifier onlyPetugas() {
+        require(hasRole(DEFAULT_PETUGAS_ROLE, msg.sender),"Terbatas untuk petugas");
+        require(petugasBlacklistAddress[msg.sender] == false,"Petugas terdaftar di blacklist");
+        _;
     }
 
-    function setPetugasForRole(
-        bytes32 _role, bytes32 _petugasRole
-    ) public onlyOwner {
-        _setRoleAdmin(_role, _petugasRole);
+    function addNewPetugas(address _petugasAddress) public onlyOwner {
+        grantRole(DEFAULT_PETUGAS_ROLE, _petugasAddress);
+        emit NewPetugas(_petugasAddress);
+    }
+
+    function removePetugas(address _petugasAddress) public onlyOwner {
+        revokeRole(DEFAULT_PETUGAS_ROLE, _petugasAddress);
+        petugasBlacklistAddress[_petugasAddress] = true;
+        emit RemovePetugas(_petugasAddress);
+    }
+
+    function addNewMember(
+        address _memberAddress,
+        string memory _name
+    ) public onlyPetugas {
+        addressToMember[_memberAddress] = Member(_name,true);
+        emit newMember(_memberAddress, _name);
+    }
+
+    function removeMember(
+        address _memberAddress
+    ) public onlyPetugas {
+        addressToMember[_memberAddress].status = false;
+        emit removeMembers(_memberAddress);
     }
 }
